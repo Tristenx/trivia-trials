@@ -6,6 +6,8 @@ import random
 import json
 
 # ---------------------------- CLASSES ------------------------------- #
+
+
 class QuizLeaderboard:
     def __init__(self):
         default_data = {
@@ -36,14 +38,19 @@ class QuizLeaderboard:
         with open("leaderboard.json", "w") as file:
             json.dump(data, file, indent=4)
 
+
 class QuizContent:
     def __init__(self):
         self.question_data = {}
         self.get_question_data()
-        self.questions = [html.unescape(question["question"]) for question in self.question_data["results"]]
-        self.correct_answers = [html.unescape(question["correct_answer"]) for question in self.question_data["results"]]
-        self.incorrect_answers = [html.unescape(question["incorrect_answers"]) for question in self.question_data["results"]]
-        self.possible_answers = [[self.correct_answers[i]] + self.incorrect_answers[i] for i in range(len(self.incorrect_answers))]
+        self.questions = [html.unescape(question["question"])
+                          for question in self.question_data["results"]]
+        self.correct_answers = [html.unescape(
+            question["correct_answer"]) for question in self.question_data["results"]]
+        self.incorrect_answers = [html.unescape(
+            question["incorrect_answers"]) for question in self.question_data["results"]]
+        self.possible_answers = [[self.correct_answers[i]] + self.incorrect_answers[i]
+                                 for i in range(len(self.incorrect_answers))]
         self.shuffle_possible_answers()
 
     def get_question_data(self):
@@ -59,6 +66,7 @@ class QuizContent:
     def shuffle_possible_answers(self):
         for answers in self.possible_answers:
             random.shuffle(answers)
+
 
 class QuizBrain:
     def __init__(self, content: QuizContent):
@@ -82,6 +90,7 @@ class QuizBrain:
     def check_user_answer(self, answer):
         return answer == self.current_correct_answer
 
+
 class QuizUI:
     def __init__(self, quiz: QuizBrain, leaderboard: QuizLeaderboard):
         self.quiz = quiz
@@ -92,30 +101,42 @@ class QuizUI:
         self.window.title("Trivia Trials")
         self.window.config(padx=20, pady=20)
 
-        self.title_text = Label(text="Welcome to Trivia Trials", font=("San Fransisco", 30), wraplength=250)
+        self.title_text = Label(text="Welcome to Trivia Trials", font=(
+            "San Fransisco", 30), wraplength=250)
         self.title_text.grid(row=0, column=0)
 
-        self.score_text = Label(text=f"Score: {self.quiz.score}", font=("San Fransisco", 15))
+        self.score_text = Label(
+            text=f"Score: {self.quiz.score}", font=("San Fransisco", 15))
 
-        self.leaderboard_player_text = Label(text="PLAYER", font=("San Fransisco", 15))
-        self.leaderboard_score_text = Label(text="SCORE", font=("San Fransisco", 15))
+        self.leaderboard_player_text = Label(
+            text="PLAYER", font=("San Fransisco", 15))
+        self.leaderboard_score_text = Label(
+            text="SCORE", font=("San Fransisco", 15))
 
         self.canvas = Canvas(width=250, height=250, highlightthickness=0)
-        self.question_text = self.canvas.create_text(125, 125, text="Are you ready to start?", font=("San Fransisco", 15), width=230, justify="center")
+        self.question_text = self.canvas.create_text(125, 125, text="Are you ready to start?", font=(
+            "San Fransisco", 15), width=230, justify="center")
         self.canvas.grid(row=1, column=0)
 
-        self.start_button = Button(text="Start", font=("San Fransisco", 10), wraplength=250, width=30, command=self.start_func, relief="groove")
+        self.start_button = Button(text="Start", font=(
+            "San Fransisco", 10), wraplength=250, width=30, command=self.start_func, relief="groove")
         self.start_button.grid(row=2, column=0)
 
-        self.option1_button = Button(text=self.quiz.current_possible_answers[0], font=("San Fransisco", 10), wraplength=250, width=30, command=self.option1_func, relief="groove")
-        self.option2_button = Button(text=self.quiz.current_possible_answers[1], font=("San Fransisco", 10), wraplength=250, width=30, command=self.option2_func, relief="groove")
-        self.option3_button = Button(text=self.quiz.current_possible_answers[2], font=("San Fransisco", 10), wraplength=250, width=30, command=self.option3_func, relief="groove")
-        self.option4_button = Button(text=self.quiz.current_possible_answers[3], font=("San Fransisco", 10), wraplength=250, width=30, command=self.option4_func, relief="groove")
+        self.option1_button = Button(text=self.quiz.current_possible_answers[0], font=(
+            "San Fransisco", 10), wraplength=250, width=30, command=self.option1_func, relief="groove")
+        self.option2_button = Button(text=self.quiz.current_possible_answers[1], font=(
+            "San Fransisco", 10), wraplength=250, width=30, command=self.option2_func, relief="groove")
+        self.option3_button = Button(text=self.quiz.current_possible_answers[2], font=(
+            "San Fransisco", 10), wraplength=250, width=30, command=self.option3_func, relief="groove")
+        self.option4_button = Button(text=self.quiz.current_possible_answers[3], font=(
+            "San Fransisco", 10), wraplength=250, width=30, command=self.option4_func, relief="groove")
 
-        self.username_text = Label(text=f"Enter Username:", font=("San Fransisco", 15))
+        self.username_text = Label(
+            text=f"Enter Username:", font=("San Fransisco", 15))
         self.username_entry = Entry(width=30)
 
-        self.add_username_button = Button(text="Add", font=("San Fransisco", 10), width=10, command=self.add_username_func, relief="groove")
+        self.add_username_button = Button(text="Add", font=(
+            "San Fransisco", 10), width=10, command=self.add_username_func, relief="groove")
 
         self.window.mainloop()
 
@@ -126,7 +147,8 @@ class QuizUI:
         self.option4_button["state"] = "normal"
         self.title_text.config(text=f"Question {self.quiz.question_number}")
         self.score_text.config(text=f"Score: {self.quiz.score}")
-        self.canvas.itemconfig(self.question_text, text=self.quiz.current_question)
+        self.canvas.itemconfig(
+            self.question_text, text=self.quiz.current_question)
         self.option1_button.config(text=self.quiz.current_possible_answers[0])
         self.option2_button.config(text=self.quiz.current_possible_answers[1])
         self.option3_button.config(text=self.quiz.current_possible_answers[2])
@@ -147,7 +169,8 @@ class QuizUI:
             self.canvas.itemconfig(self.question_text, text=f"Correct")
             self.score_text.config(text=f"Score: {self.quiz.score}")
         else:
-            self.canvas.itemconfig(self.question_text, text=f"Incorrect\nThe answer was {self.quiz.current_correct_answer}")
+            self.canvas.itemconfig(
+                self.question_text, text=f"Incorrect\nThe answer was {self.quiz.current_correct_answer}")
         self.window.after(ms=2000, func=self.update_ui)
 
     def end_game_ui(self):
@@ -228,9 +251,11 @@ class QuizUI:
     def add_username_func(self):
         self.current_player = self.username_entry.get()
         if self.current_player == "":
-            messagebox.showerror(title="Invalid Input", message="Please do not leave username empty")
+            messagebox.showerror(title="Invalid Input",
+                                 message="Please do not leave username empty")
         else:
-            self.leaderboard.add_player_score(self.current_player, self.quiz.score)
+            self.leaderboard.add_player_score(
+                self.current_player, self.quiz.score)
             self.display_leaderboard()
 
     def display_leaderboard(self):
@@ -239,7 +264,7 @@ class QuizUI:
         for player in quiz_leaderboard.player_list:
             if player != "player":
                 player_names += f"\n{player}"
-                player_scores += f"\n{quiz_leaderboard.leaderboard_data[player]["score"]}"
+                player_scores += f"\n{quiz_leaderboard.leaderboard_data[player]['score']}"
         player_names += f"\n{self.current_player}"
         player_scores += f"\n{self.quiz.score}"
         self.title_text.config(text="Leaderboard")
@@ -251,6 +276,7 @@ class QuizUI:
         self.username_text.grid_forget()
         self.username_entry.grid_forget()
         self.add_username_button.grid_forget()
+
 
 # ---------------------------- MAIN ------------------------------- #
 quiz_leaderboard = QuizLeaderboard()
